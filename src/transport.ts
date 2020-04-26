@@ -71,6 +71,7 @@ export class PinoSentryTransport {
   public prepareAndGo(chunk: any, cb: any): void {
     const severity = this.getLogSeverity(chunk.level);
     const tags = chunk.tags || {};
+    const data = chunk.data || {};
 
     if (chunk.reqId) {
       tags.uuid = chunk.reqId;
@@ -92,6 +93,10 @@ export class PinoSentryTransport {
     Sentry.configureScope(scope => {
       if (this.isObject(tags)) {
         Object.keys(tags).forEach(tag => scope.setExtra(tag, tags[tag]));
+      }
+
+      if (this.isObject(data)) {
+        scope.setExtra('data', data);
       }
     });
 
