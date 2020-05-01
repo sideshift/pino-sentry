@@ -14,3 +14,5 @@ yarn-error.log
 
 # Specific
 dist
+
+package-lock.json
