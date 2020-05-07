@@ -1,5 +1,5 @@
 {
-  "name": "pino-sentry",
+  "name": "sideshift-pino-sentry",
   "description": "@sentry/node transport for pino logger",
   "version": "0.3.1",
   "author": "Andrew Avdeev <andrewww.avdeev@gmail.com>",
