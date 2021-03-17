@@ -4,6 +4,9 @@ import pump from 'pump';
 import through from 'through2';
 import pify from 'pify';
 import * as Sentry from '@sentry/node';
+import * as Tracing from '@sentry/tracing';
+
+Tracing;
 
 class ExtendedError extends Error {
   public constructor(info: any) {
@@ -133,6 +136,7 @@ export class PinoSentryTransport {
       debug: !!process.env.SENTRY_DEBUG || false,
       sampleRate: 1.0,
       maxBreadcrumbs: 100,
+      tracesSampleRate: 1.0,
     });
   }
 
