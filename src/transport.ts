@@ -56,9 +56,8 @@ export class PinoSentryTransport {
 
   public parse(line: any) {
     const chunk = JSON.parse(line);
-    const cb = () => {};
 
-    this.prepareAndGo(chunk, cb);
+    this.prepareAndGo(chunk, undefined);
   }
 
   public transformer(): stream.Transform {
@@ -89,9 +88,9 @@ export class PinoSentryTransport {
     const message = chunk.msg;
     const stack = chunk.stack || '';
 
-    Sentry.configureScope((scope) => {
+    Sentry.configureScope(scope => {
       if (this.isObject(tags)) {
-        Object.keys(tags).forEach((tag) => scope.setExtra(tag, tags[tag]));
+        Object.keys(tags).forEach(tag => scope.setExtra(tag, tags[tag]));
       }
 
       if (this.isObject(data)) {
@@ -101,17 +100,21 @@ export class PinoSentryTransport {
 
     // Capturing Errors / Exceptions
     if (this.shouldLogException(severity)) {
-      const error = message instanceof Error ? message : new ExtendedError({ message, stack });
+      const error =
+        message instanceof Error
+          ? message
+          : new ExtendedError({ message, stack });
 
       setImmediate(() => {
         Sentry.captureException(error);
-        cb();
+
+        cb?.();
       });
     } else {
       // Capturing Messages
       setImmediate(() => {
         Sentry.captureMessage(message, severity);
-        cb();
+        cb?.();
       });
     }
   }
@@ -125,7 +128,8 @@ export class PinoSentryTransport {
       // npm_package_name will be available if ran with
       // from a "script" field in package.json.
       serverName: process.env.npm_package_name || 'pino-sentry',
-      environment: process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production',
+      environment:
+        process.env.SENTRY_ENVIRONMENT || process.env.NODE_ENV || 'production',
       debug: !!process.env.SENTRY_DEBUG || false,
       sampleRate: 1.0,
       maxBreadcrumbs: 100,
@@ -142,7 +146,9 @@ export class PinoSentryTransport {
   }
 }
 
-export function createWriteStreamAsync(options: Sentry.NodeOptions = {}): PromiseLike<stream.Transform> {
+export function createWriteStreamAsync(
+  options: Sentry.NodeOptions = {}
+): PromiseLike<stream.Transform> {
   if (!options.dsn && !process.env.SENTRY_DSN) {
     throw Error('Sentry DSN missing');
   }
@@ -153,7 +159,7 @@ export function createWriteStreamAsync(options: Sentry.NodeOptions = {}): Promis
   const pumpAsync = pify(pump);
   return pumpAsync(
     process.stdin,
-    split((line) => {
+    split(line => {
       try {
         return JSON.parse(line);
       } catch (e) {
