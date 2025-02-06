@@ -4,7 +4,7 @@ import split from 'split2';
 import Pump from 'pumpify';
 import through from 'through2';
 import * as Sentry from '@sentry/node';
-import { Breadcrumb } from '@sentry/types';
+import { Breadcrumb } from '@sentry/node';
 
 type ValueOf<T> = T extends any[] ? T[number] : T[keyof T]
 
