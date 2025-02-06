@@ -159,6 +159,10 @@ export class PinoSentryTransport {
       Object.values(breadcrumbs).forEach(breadcrumb => scope.addBreadcrumb(breadcrumb));
     }
 
+    if (this.isObject(chunk.data)) {
+      scope.setExtra('data', JSON.stringify(chunk.data, null, 2));
+    }
+
     // Capturing Errors / Exceptions
     if (this.isSentryException(severity)) {
       const error = message instanceof Error ? message : new ExtendedError({ message, stack });
